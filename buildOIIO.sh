@@ -86,22 +86,32 @@ git checkout $GIT_BRANCH
 
 if [ ! -d build ]; then
 
+    FAIL=0
     if [[ "$GIT_BRANCH" = *-1.5.* ]]; then
-        patch -p1 -i $PATCH_DIR/oiio-1.5.22-exrthreads.patch || exit 1
-        patch -p1 -i $PATCH_DIR/oiio-1.5.23-checkmaxmem.patch || exit 1
-        patch -p1 -i $PATCH_DIR/oiio-1.5.23-invalidatespec.patch || exit 1
+        patch -p1 -i $PATCH_DIR/oiio-1.5.22-exrthreads.patch || FAIL=1
+        patch -p1 -i $PATCH_DIR/oiio-1.5.23-checkmaxmem.patch || FAIL=1
+        patch -p1 -i $PATCH_DIR/oiio-1.5.23-invalidatespec.patch || FAIL=1
     elif [[ "$GIT_BRANCH" = *-1.6.* ]]; then
-        patch -p1 -i $PATCH_DIR/oiio-sha1.patch || exit 1
-        patch -p1 -i $PATCH_DIR/oiio-x86intrin.patch || exit 1
+        patch -p1 -i $PATCH_DIR/oiio-sha1.patch || FAIL=1
+        patch -p1 -i $PATCH_DIR/oiio-x86intrin.patch || FAIL=1
     fi
     mkdir build
     cd build
-    cmake -DUSE_QT=0 -DBOOST_ROOT=/opt/Natron-1.0 -DUSE_TBB=0 -DUSE_PYTHON=0 -DUSE_FIELD3D=0 -DUSE_FFMPEG=0 -DUSE_OPENJPEG=0 -DUSE_OCIO=1 -DUSE_OPENCV=0 -DUSE_OPENSSL=0 -DUSE_FREETYPE=1 -DUSE_GIF=1 -DUSE_LIBRAW=1 -DSTOP_ON_WARNING=0 $CMAKE_OIIO_TOOLS -DCMAKE_INSTALL_PREFIX="" ${CMAKE_CONFIG} ${XCODE_EXTRA} .. || exit 1
+    cmake -DUSE_QT=0 -DBOOST_ROOT=/opt/Natron-1.0 -DUSE_TBB=0 -DUSE_PYTHON=0 -DUSE_FIELD3D=0 -DUSE_FFMPEG=0 -DUSE_OPENJPEG=0 -DUSE_OCIO=1 -DUSE_OPENCV=0 -DUSE_OPENSSL=0 -DUSE_FREETYPE=1 -DUSE_GIF=1 -DUSE_LIBRAW=1 -DSTOP_ON_WARNING=0 $CMAKE_OIIO_TOOLS -DCMAKE_INSTALL_PREFIX="" ${CMAKE_CONFIG} ${XCODE_EXTRA} .. || FAIL=1
+    if [ "$FAIL" = "1" ]; then
+        rm -rf build
+        exit 1
+    fi
 else
     cd build || exit 1
 fi
 
 if [ "$USE_XCODE" = "1" ]; then
+    if [ ! -d "OpenImageIO.xcodeproj" ]; then
+        cd ..
+        rm -rf build
+        exit 1
+    fi
     INSTALL_DIR=$DST_DIR xcodebuild -project OpenImageIO.xcodeproj -target OpenImageIO -configuration=$BUILDTYPE || exit 1
 (cd $DST_DIR/lib;rm libOpenImageIO*; ln -s $CWD/oiio-src/build/src/libOpenImageIO/Debug/libOpenImageIO* .;rm -rf $DST_DIR/include/OpenImageIO;cp -r $CWD/oiio-src/src/include/OpenImageIO $DST_DIR/include; cp $CWD/oiio-src/build/include/OpenImageIO/* $DST_DIR/include/OpenImageIO/;)
 else
