@@ -89,6 +89,7 @@ if [ ! -d build ]; then
     if [[ "$GIT_BRANCH" = *-1.5.* ]]; then
         patch -p1 -i $PATCH_DIR/oiio-1.5.22-exrthreads.patch || exit 1
         patch -p1 -i $PATCH_DIR/oiio-1.5.23-checkmaxmem.patch || exit 1
+        patch -p1 -i $PATCH_DIR/oiio-1.5.23-invalidatespec.patch || exit 1
     elif [[ "$GIT_BRANCH" = *-1.6.* ]]; then
         patch -p1 -i $PATCH_DIR/oiio-sha1.patch || exit 1
         patch -p1 -i $PATCH_DIR/oiio-x86intrin.patch || exit 1
