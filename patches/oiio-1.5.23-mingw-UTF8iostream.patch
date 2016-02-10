@@ -46,7 +46,7 @@ index 4f2f738..392273a 100644
  /// Read the entire contents of the named text file and place it in str,
  /// returning true on success, false on failure.
 diff --git a/src/libutil/filesystem.cpp b/src/libutil/filesystem.cpp
-index 7fb4759..ba0e810 100644
+index 7fb4759..212636a 100644
 --- a/src/libutil/filesystem.cpp
 +++ b/src/libutil/filesystem.cpp
 @@ -39,6 +39,7 @@
@@ -69,7 +69,7 @@ index 7fb4759..ba0e810 100644
  #else
  #include <unistd.h>
  #endif
-@@ -484,35 +490,168 @@ Filesystem::fopen (string_view path, string_view mode)
+@@ -484,35 +490,169 @@ Filesystem::fopen (string_view path, string_view mode)
  #endif
  }
  
@@ -91,6 +91,7 @@ index 7fb4759..ba0e810 100644
 +    }
 +    if ((mode & std::ios_base::out) == std::ios_base::out) {
 +        f |= _O_WRONLY;
++        f |= _O_CREAT;
 +    }
 +    if ((mode & std::ios_base::binary) == std::ios_base::binary) {
 +        f |= _O_BINARY;
@@ -253,7 +254,7 @@ index 7fb4759..ba0e810 100644
  }
  
  
-@@ -524,13 +663,18 @@ Filesystem::read_text_file (string_view filename, std::string &str)
+@@ -524,13 +664,18 @@ Filesystem::read_text_file (string_view filename, std::string &str)
  {
      // For info on why this is the fastest method:
      // http://insanecoding.blogspot.com/2011/11/how-to-read-in-file-in-c.html
@@ -277,10 +278,10 @@ index 7fb4759..ba0e810 100644
          return true;
      }
 diff --git a/src/openexr.imageio/exrinput.cpp b/src/openexr.imageio/exrinput.cpp
-index e984644..9daf89e 100644
+index e984644..80b2fee 100644
 --- a/src/openexr.imageio/exrinput.cpp
 +++ b/src/openexr.imageio/exrinput.cpp
-@@ -85,6 +87,7 @@
+@@ -85,6 +85,7 @@
  #include "OpenImageIO/filesystem.h"
  #include "OpenImageIO/imagebufalgo_util.h"
  
@@ -288,7 +289,7 @@ index e984644..9daf89e 100644
  #include <boost/scoped_array.hpp>
  
  
-@@ -100,7 +103,13 @@ public:
+@@ -100,7 +101,13 @@ public:
      OpenEXRInputStream (const char *filename) : Imf::IStream (filename) {
          // The reason we have this class is for this line, so that we
          // can correctly handle UTF-8 file paths on Windows
@@ -303,7 +304,7 @@ index e984644..9daf89e 100644
          if (!ifs)
              Iex::throwErrnoExc ();
      }
-@@ -108,18 +117,23 @@ public:
+@@ -108,18 +115,23 @@ public:
          if (!ifs)
              throw Iex::InputExc ("Unexpected end of file.");
          errno = 0;
@@ -331,7 +332,7 @@ index e984644..9daf89e 100644
      }
  
  private:
-@@ -131,7 +145,7 @@ private:
+@@ -131,7 +143,7 @@ private:
          }
          return true;
      }
@@ -340,7 +341,7 @@ index e984644..9daf89e 100644
  };
  
  
-@@ -317,12 +331,12 @@ void set_exr_threads ()
+@@ -317,12 +329,12 @@ void set_exr_threads ()
      static spin_mutex exr_threads_mutex;  
  
      int oiio_threads = 1;
