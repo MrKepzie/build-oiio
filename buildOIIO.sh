@@ -68,7 +68,7 @@ fi
 
 
 if [ -z "$NO_CLEAN" ]; then
-    rm -rf oiio*
+    rm -rf oiio-src*
 fi
 
 if [ ! -d "oiio-src" ]; then
