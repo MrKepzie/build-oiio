@@ -88,13 +88,13 @@ if [ ! -d build ]; then
 
     FAIL=0
     if [[ "$GIT_BRANCH" = *-1.5.* ]]; then
-        patch -p1 -i $PATCH_DIR/oiio-1.5.22-exrthreads.patch || FAIL=1
-        patch -p1 -i $PATCH_DIR/oiio-1.5.23-checkmaxmem.patch || FAIL=1
-        patch -p1 -i $PATCH_DIR/oiio-1.5.23-invalidatespec.patch || FAIL=1
+        patches=find $PATCH_DIR/1.5 -type f
     elif [[ "$GIT_BRANCH" = *-1.6.* ]]; then
-        patch -p1 -i $PATCH_DIR/oiio-sha1.patch || FAIL=1
-        patch -p1 -i $PATCH_DIR/oiio-x86intrin.patch || FAIL=1
+        patches=find $PATCH_DIR/1.6 -type f
     fi
+    for p in $patches; do
+        patch -p1 -i $p || FAIL=1
+    done
     mkdir build
     cd build
     cmake -DUSE_QT=0 -DBOOST_ROOT=/opt/Natron-1.0 -DUSE_TBB=0 -DUSE_PYTHON=0 -DUSE_FIELD3D=0 -DUSE_FFMPEG=0 -DUSE_OPENJPEG=0 -DUSE_OCIO=1 -DUSE_OPENCV=0 -DUSE_OPENSSL=0 -DUSE_FREETYPE=1 -DUSE_GIF=1 -DUSE_LIBRAW=1 -DSTOP_ON_WARNING=0 $CMAKE_OIIO_TOOLS -DCMAKE_INSTALL_PREFIX="" ${CMAKE_CONFIG} ${XCODE_EXTRA} .. || FAIL=1
