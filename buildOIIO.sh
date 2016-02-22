@@ -82,6 +82,7 @@ if [ -z "$NO_CLEAN" ]; then
     rm -rf build
 fi
 
+OS=$(uname -s)
 git checkout $GIT_BRANCH
 
 if [ ! -d build ]; then
@@ -93,6 +94,9 @@ if [ ! -d build ]; then
         patches=find $PATCH_DIR/1.6 -type f
     fi
     for p in $patches; do
+        if [[ "$p" = *-mingw-* ]] && [ "$OS" != "MINGW64_NT-6.1" ]; then
+            continue
+        fi
         patch -p1 -i $p || FAIL=1
     done
     mkdir build
