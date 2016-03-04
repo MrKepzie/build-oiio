@@ -17,7 +17,7 @@
 set -x 
 CWD=$(pwd)
 
-DEFAULT_GIT_BRANCH=tags/Release-1.5.23
+DEFAULT_GIT_BRANCH=tags/Release-1.6.11
 
 if [ -z "$OIIO_VERSION" ]; then
     OIIO_VERSION=$DEFAULT_OIIO_VERSION
