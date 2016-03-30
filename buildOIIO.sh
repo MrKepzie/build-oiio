@@ -89,9 +89,9 @@ if [ ! -d build ]; then
 
     FAIL=0
     if [[ "$GIT_BRANCH" = *-1.5.* ]]; then
-        patches=find $PATCH_DIR/1.5 -type f
+        patches=$(find $PATCH_DIR/1.5 -type f)
     elif [[ "$GIT_BRANCH" = *-1.6.* ]]; then
-        patches=find $PATCH_DIR/1.6 -type f
+        patches=$(find $PATCH_DIR/1.6 -type f)
     fi
     for p in $patches; do
         if [[ "$p" = *-mingw-* ]] && [ "$OS" != "MINGW64_NT-6.1" ]; then
