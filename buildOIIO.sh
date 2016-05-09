@@ -11,13 +11,13 @@
 # DST_DIR=... (required): Where to deploy the library
 #
 #
-#Usage: MKJOBS=8 NO_TOOLS=1 GIT_BRANCH=tags/Release-1.5.23 CONFIG=debug DST_DIR=. ./buildOIIO
+#Usage: MKJOBS=8 NO_TOOLS=1 GIT_BRANCH=tags/Release-1.6.13 CONFIG=debug DST_DIR=. ./buildOIIO
 #With Xcode: NO_CLEAN=1 USE_XCODE=1 GIT_BRANCH=master CONFIG=debug DST_DIR=. ./buildOIIO.sh
 
 set -x 
 CWD=$(pwd)
 
-DEFAULT_GIT_BRANCH=tags/Release-1.6.11
+DEFAULT_GIT_BRANCH=tags/Release-1.6.13
 
 if [ -z "$OIIO_VERSION" ]; then
     OIIO_VERSION=$DEFAULT_OIIO_VERSION
