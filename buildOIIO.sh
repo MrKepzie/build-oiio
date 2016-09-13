@@ -11,13 +11,13 @@
 # DST_DIR=... (required): Where to deploy the library
 #
 #
-#Usage: MKJOBS=8 NO_TOOLS=1 GIT_BRANCH=tags/Release-1.6.13 CONFIG=debug DST_DIR=. ./buildOIIO
+#Usage: MKJOBS=8 NO_TOOLS=1 GIT_BRANCH=tags/Release-1.6.17 CONFIG=debug DST_DIR=. ./buildOIIO
 #With Xcode: NO_CLEAN=1 USE_XCODE=1 GIT_BRANCH=master CONFIG=debug DST_DIR=. ./buildOIIO.sh
 
 set -x 
 CWD=$(pwd)
 
-DEFAULT_GIT_BRANCH=tags/Release-1.6.13
+DEFAULT_GIT_BRANCH=tags/Release-1.6.17
 
 if [ -z "$OIIO_VERSION" ]; then
     OIIO_VERSION=$DEFAULT_OIIO_VERSION
@@ -65,6 +65,9 @@ if [ "$USE_XCODE" = "1" ]; then
     XCODE_EXTRA="-G Xcode"
 fi
 
+if [ ! -z "$OPENEXR_HOME" ]; then
+    OPENEXR_EXTRA="-DOPENEXR_HOME=${OPENEXR_HOME}"
+fi
 
 
 if [ -z "$NO_CLEAN" ]; then
@@ -101,7 +104,7 @@ if [ ! -d build ]; then
     done
     mkdir build
     cd build
-    cmake -DUSE_QT=0 -DBOOST_ROOT=/opt/Natron-1.0 -DUSE_TBB=0 -DUSE_PYTHON=0 -DUSE_FIELD3D=0 -DUSE_FFMPEG=0 -DUSE_OPENJPEG=0 -DUSE_OCIO=1 -DUSE_OPENCV=0 -DUSE_OPENSSL=0 -DUSE_FREETYPE=1 -DUSE_GIF=1 -DUSE_LIBRAW=1 -DSTOP_ON_WARNING=0 $CMAKE_OIIO_TOOLS -DCMAKE_INSTALL_PREFIX="" ${CMAKE_CONFIG} ${XCODE_EXTRA} .. || FAIL=1
+    cmake $OPENEXR_EXTRA -DUSE_QT=0 -DBOOST_ROOT=/opt/Natron-1.0 -DUSE_TBB=0 -DUSE_PYTHON=0 -DUSE_FIELD3D=0 -DUSE_FFMPEG=0 -DUSE_OPENJPEG=0 -DUSE_OCIO=1 -DUSE_OPENCV=0 -DUSE_OPENSSL=0 -DUSE_FREETYPE=1 -DUSE_GIF=1 -DUSE_LIBRAW=1 -DSTOP_ON_WARNING=0 $CMAKE_OIIO_TOOLS -DCMAKE_INSTALL_PREFIX="" ${CMAKE_CONFIG} ${XCODE_EXTRA} .. || FAIL=1
     if [ "$FAIL" = "1" ]; then
         rm -rf build
         exit 1
