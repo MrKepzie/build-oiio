@@ -1,6 +1,7 @@
 #!/bin/sh
 
-#Options:
+# Options:
+# OIIO_SRC= ... (optional): Can be specified to use a custom OIIO directory where the sources are. If empty this will fetch the git branch specified
 # NO_CLEAN=1 (optional): Do not fetch oiio if directory exists and does not remove build dir
 # USE_XCODE=1 (optional): (OSX Only) Builds using xcodebuild. The binaries will be symlinked to the Xcode build directory
 # and the actual headers will not be installed
@@ -18,7 +19,7 @@
 set -x 
 CWD=$(pwd)
 
-DEFAULT_GIT_BRANCH=tags/Release-1.6.17
+DEFAULT_GIT_BRANCH=tags/Release-1.6.18
 
 if [ -z "$OIIO_VERSION" ]; then
     OIIO_VERSION=$DEFAULT_OIIO_VERSION
@@ -71,16 +72,22 @@ if [ ! -z "$OPENEXR_HOME" ]; then
 fi
 
 
-if [ -z "$NO_CLEAN" ]; then
-    rm -rf oiio-src*
+if [ -z "$OIIO_SRC" ]; then
+    HAS_CUSTOM_SRC=0
+    OIIO_SRC=oiio-src
+    if [ -z "$NO_CLEAN" ]; then
+        rm -rf oiio-src*
+    fi
+
+    if [ ! -d "oiio-src" ]; then
+        echo "Using git repository $OIIO_GIT"
+        git clone $OIIO_GIT oiio-src
+    fi
+else
+    HAS_CUSTOM_SRC=1
 fi
 
-if [ ! -d "oiio-src" ]; then
-    echo "Using git repository $OIIO_GIT"
-    git clone $OIIO_GIT oiio-src
-fi
-
-cd oiio-src || exit 1
+cd $OIIO_SRC || exit 1
 
 if [ -z "$NO_CLEAN" ]; then
     rm -rf build
@@ -92,17 +99,20 @@ git checkout $GIT_BRANCH
 if [ ! -d build ]; then
 
     FAIL=0
-    if [[ "$GIT_BRANCH" = *-1.5.* ]]; then
-        patches=$(find $PATCH_DIR/1.5 -type f)
-    elif [[ "$GIT_BRANCH" = *-1.6.* ]]; then
-        patches=$(find $PATCH_DIR/1.6 -type f)
-    fi
-    for p in $patches; do
-        if [[ "$p" = *-mingw-* ]] && [ "$OS" != "MINGW64_NT-6.1" ]; then
-            continue
+    if [ "$HAS_CUSTOM_SRC" == "0" ]; then
+
+        if [[ "$GIT_BRANCH" = *-1.5.* ]]; then
+            patches=$(find $PATCH_DIR/1.5 -type f)
+        elif [[ "$GIT_BRANCH" = *-1.6.* ]]; then
+            patches=$(find $PATCH_DIR/1.6 -type f)
         fi
-        patch -p1 -i $p || FAIL=1
-    done
+        for p in $patches; do
+            if [[ "$p" = *-mingw-* ]] && [ "$OS" != "MINGW64_NT-6.1" ]; then
+                continue
+            fi
+            patch -p1 -i $p || FAIL=1
+        done
+    fi
     mkdir build
     cd build
     cmake $OPENEXR_EXTRA -DUSE_QT=0 -DBOOST_ROOT=/opt/Natron-1.0 -DUSE_TBB=0 -DUSE_PYTHON=0 -DUSE_FIELD3D=0 -DUSE_FFMPEG=0 -DUSE_OPENJPEG=0 -DUSE_OCIO=1 -DUSE_OPENCV=0 -DUSE_OPENSSL=0 -DUSE_FREETYPE=1 -DUSE_GIF=1 -DUSE_LIBRAW=1 -DSTOP_ON_WARNING=0 $CMAKE_OIIO_TOOLS -DCMAKE_INSTALL_PREFIX="" ${CMAKE_CONFIG} ${XCODE_EXTRA} .. || FAIL=1
