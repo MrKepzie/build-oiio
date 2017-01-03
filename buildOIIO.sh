@@ -9,6 +9,7 @@
 # CONFIG=(debug,release) (required)
 # NO_TOOLS=1:(optional) do not build oiio tools
 # DST_DIR=... (required): Where to deploy the library
+# OPENEXR_HOME=...(optional): path where the openexr library is deployed (the directory containing bin/ lib/ include/)
 #
 #
 #Usage: MKJOBS=8 NO_TOOLS=1 GIT_BRANCH=tags/Release-1.6.17 CONFIG=debug DST_DIR=. ./buildOIIO

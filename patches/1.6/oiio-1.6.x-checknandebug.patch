@@ -1,0 +1,13 @@
+diff --git a/src/libOpenImageIO/imageio.cpp b/src/libOpenImageIO/imageio.cpp
+index 791ac8d..f5e6fe7 100644
+--- a/src/libOpenImageIO/imageio.cpp
++++ b/src/libOpenImageIO/imageio.cpp
+@@ -505,6 +505,8 @@ convert_types (TypeDesc src_type, const void *src,
+     if (dst_type == TypeDesc::TypeFloat) {
+         // Special case -- converting non-float to float
+         pvt::convert_to_float (src, (float *)dst, n, src_type);
++        // Check for NaNs
++        DASSERT(*((float*)dst)== *((float*)dst));
+         return true;
+     }
+ 
