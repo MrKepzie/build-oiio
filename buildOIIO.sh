@@ -110,7 +110,7 @@ if [ ! -d build ]; then
             if [[ "$p" = *-mingw-* ]] && [ "$OS" != "MINGW64_NT-6.1" ]; then
                 continue
             fi
-            patch -p1 -i $p || FAIL=1
+            FAIL=$(patch -p1 -i $p)
         done
     fi
     mkdir build
